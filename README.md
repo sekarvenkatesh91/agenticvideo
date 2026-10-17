@@ -1,4 +1,4 @@
-# video-edit-skills
+# agenticvideo
 
 **Product videos, recorded by an agent.** Tell your AI coding agent what to show. It drives a real browser with Playwright, captures every click and keystroke, and turns the footage into a branded 16:9 video with motion, captions and your voice. Everything is plain HTML, rendered locally with [HyperFrames](https://hyperframes.heygen.com).
 
@@ -10,8 +10,8 @@ prompt ─▶ shot list ─▶ Playwright capture ─▶ HyperFrames composition
 ## Quick start
 
 ```bash
-git clone <repo-url> video-edit-skills && cd video-edit-skills
-./scripts/setup.sh --with-align        # Windows: powershell -ExecutionPolicy Bypass -File scripts/setup.ps1 -WithAlign
+git clone https://github.com/sekarvenkatesh91/agenticvideo.git && cd agenticvideo
+bash scripts/setup.sh --with-align        # Windows: powershell -ExecutionPolicy Bypass -File scripts/setup.ps1 -WithAlign
 ```
 
 Open Claude Code, Cursor, Codex or another agent in the folder and say:

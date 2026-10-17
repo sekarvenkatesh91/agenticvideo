@@ -9,7 +9,7 @@ This file is for any AI coding agent working in this repo (Claude Code, Cursor, 
 ## Phase 0 · Setup (once per machine)
 
 ```bash
-./scripts/setup.sh --with-align                 # macOS / Linux
+bash scripts/setup.sh --with-align                 # macOS / Linux
 powershell -ExecutionPolicy Bypass -File scripts/setup.ps1 -WithAlign   # Windows
 ```
 
@@ -49,7 +49,7 @@ Use `skills/content-skills/SKILL.md` and the brand skill's voice rules.
 ## Phase 4 · Capture
 
 ```bash
-./scripts/new-video.sh <slug>                      # creates videos/<slug>/ and capture/<slug>.shots.json
+bash scripts/new-video.sh <slug>                      # creates videos/<slug>/ and capture/<slug>.shots.json
 node capture/capture.mjs capture/<slug>.shots.json
 ```
 

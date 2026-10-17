@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # One-time setup: checks tools, warms the pinned HyperFrames CLI, installs skills for agents.
-# Usage: ./scripts/setup.sh [--with-tts] [--with-align] [--global-skills]
+# Usage: bash scripts/setup.sh [--with-tts] [--with-align] [--global-skills]
 set -euo pipefail
 
 HF="hyperframes@0.8.164"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start a new product video from the browser-demo template. Usage: ./scripts/new-video.sh <slug>
+# Start a new product video from the browser-demo template. Usage: bash scripts/new-video.sh <slug>
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SLUG="${1:-}"

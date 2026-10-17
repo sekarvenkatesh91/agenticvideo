@@ -1,0 +1,13 @@
+node_modules/
+*.mp4
+*.mov
+renders/
+.hyperframes/
+.claude/skills/
+.DS_Store
+.env*
+__pycache__/
+capture/clips/
+capture/node_modules/
+media/
+snaps*/

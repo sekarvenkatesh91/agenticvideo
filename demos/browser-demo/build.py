@@ -148,7 +148,7 @@ for n in range(3):
 i, s, d = scene('s7', 's7', '<div class="stage center" style="flex-direction:column;align-items:flex-start;padding-left:260px">'
                 '<div class="k kicker">Open source</div><div class="h serif" style="font-size:200px;line-height:.95">Point it at<br><i class="acc">your product.</i></div>'
                 '<div class="cmd mono" style="margin-top:46px;background:var(--ink);color:var(--paper);border-radius:14px;padding:18px 26px;font-size:28px">'
-                '<span style="color:#9a958e">$</span> ./scripts/setup.sh &amp;&amp; node capture/capture.mjs shots.json</div></div>', '<b>07</b>Calm title card')
+                '<span style="color:#9a958e">$</span> bash scripts/setup.sh &amp;&amp; node capture/capture.mjs shots.json</div></div>', '<b>07</b>Calm title card')
 ft(f'#{i} .k', {'autoAlpha': 0, 'y': 12}, {'autoAlpha': 1, 'y': 0, 'duration': .5}, s + .1)
 ft(f'#{i} .h', {'autoAlpha': 0, 'y': 24}, {'autoAlpha': 1, 'y': 0, 'duration': .8, 'ease': 'power2.out'}, s + .25)
 ft(f'#{i} .cmd', {'autoAlpha': 0, 'y': 16}, {'autoAlpha': 1, 'y': 0, 'duration': .5}, s + .9)
@@ -174,7 +174,7 @@ audio = ''.join(f'<audio src="vo/{sid}.wav" data-start="{S[sid] + LEAD:.3f}" dat
 
 # ---------- brand tokens ----------
 css = open('style.css').read() + '.fxlabel{visibility:hidden;opacity:0}'
-WORDMARK = 'video-edit-<b>skills</b>'
+WORDMARK = 'agentic<b>video</b>'
 def find_brand():
     env = os.environ.get('BRAND_FILE')
     if env and os.path.exists(env): return pathlib.Path(env)

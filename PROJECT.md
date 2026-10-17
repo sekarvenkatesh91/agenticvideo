@@ -1,4 +1,4 @@
-# video-edit-skills: project overview
+# agenticvideo: project overview
 
 ## The idea
 
