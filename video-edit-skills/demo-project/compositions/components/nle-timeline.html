@@ -1,0 +1,212 @@
+<!doctype html>
+<!--
+  nle-timeline: HyperFrames component (video editing UI mockup).
+  Simulates a modern professional NLE timeline (video & audio tracks, timecode ruler, moving playhead, razor cuts).
+-->
+<html lang="en" data-composition-id="nle-timeline" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NLE Timeline</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="nle-timeline" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Archivo', sans-serif;
+            color: #F4F3EF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .nle-panel {
+            width: 960px;
+            background: #201e1a;
+            border: 2px solid rgba(255, 214, 107, 0.35);
+            border-radius: 28px;
+            box-shadow: 0 40px 90px rgba(0,0,0,0.85);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          }
+          .nle-header {
+            background: #2a2722;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(0,0,0,0.5);
+          }
+          .nle-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFD66B;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+          }
+          .nle-tc {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #F4F3EF;
+            background: #171614;
+            padding: 6px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,214,107,0.3);
+          }
+          /* Ruler */
+          .nle-ruler {
+            position: relative;
+            height: 38px;
+            background: #1b1916;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #8c8880;
+          }
+          .nle-ruler-ticks {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(255, 255, 255, 0.15) 38px, rgba(255, 255, 255, 0.15) 40px);
+          }
+          /* Tracks Area */
+          .nle-tracks-body {
+            position: relative;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #141311;
+          }
+          .nle-track {
+            height: 72px;
+            background: #1c1b18;
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            overflow: hidden;
+          }
+          .track-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: #9c978f;
+            width: 48px;
+            z-index: 5;
+          }
+          /* Clips */
+          .nle-clip {
+            position: absolute;
+            height: 56px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #171614;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            white-space: nowrap;
+          }
+          .clip-v1 { left: 80px; width: 340px; background: #FFD66B; }
+          .clip-v2 { left: 430px; width: 440px; background: #e0b84c; }
+          .clip-a1 { left: 80px; width: 790px; background: #25D366; color: #000; }
+          /* Playhead */
+          .nle-playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 80px;
+            width: 3px;
+            background: #ffffff;
+            box-shadow: 0 0 12px #ffffff;
+            z-index: 50;
+            pointer-events: none;
+          }
+          .playhead-head {
+            position: absolute;
+            top: 0;
+            left: -8px;
+            width: 19px;
+            height: 18px;
+            background: #ffffff;
+            clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+          }
+        </style>
+
+        <div class="nle-panel">
+          <div class="nle-header">
+            <div class="nle-title">NLE Timeline Master</div>
+            <div class="nle-tc">00:00:14:18</div>
+          </div>
+          <div class="nle-ruler">
+            <div class="nle-ruler-ticks"></div>
+            <span>00:00</span>
+            <span style="margin-left: 200px;">00:05</span>
+            <span style="margin-left: 200px;">00:10</span>
+            <span style="margin-left: 200px;">00:15</span>
+          </div>
+          <div class="nle-tracks-body">
+            <div class="nle-playhead">
+              <div class="playhead-head"></div>
+            </div>
+            <div class="nle-track">
+              <span class="track-label">V2</span>
+              <div class="nle-clip" style="left: 180px; width: 280px; background: #F4F3EF;">Motion Graphics Overlay</div>
+            </div>
+            <div class="nle-track">
+              <span class="track-label">V1</span>
+              <div class="nle-clip clip-v1">Take_AnnaNagar_4K.mp4</div>
+              <div class="nle-clip clip-v2">Client_Sleek_Reveal.mp4</div>
+            </div>
+            <div class="nle-track">
+              <span class="track-label">A1</span>
+              <div class="nle-clip clip-a1">Voiceover_Tanglish_Master.wav ♫</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const panel = root.querySelector(".nle-panel");
+        const playhead = root.querySelector(".nle-playhead");
+        const tc = root.querySelector(".nle-tc");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Intro: Panel scales in
+        tl.fromTo(panel, { scale: 0.9, opacity: 0, y: 30 }, { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0);
+
+        // Playhead scrubs across timeline
+        tl.fromTo(playhead, { left: "80px" }, { left: "880px", duration: 2.2, ease: "none" }, 0.4);
+
+        // Timecode ticks
+        tl.to(tc, {
+          textContent: "00:00:20:00",
+          snap: { textContent: 1 },
+          duration: 2.2,
+          ease: "none"
+        }, 0.4);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["nle-timeline"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

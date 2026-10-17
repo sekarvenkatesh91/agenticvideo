@@ -1,0 +1,249 @@
+<!doctype html>
+<!--
+  orbit-couch-wall: HyperFrames component (3D spatial camera orbit around lounge/couch & statement wall).
+  A 3D camera sweeps in an orbit around a styled creator studio lounge couch & textured statement wall with floating orbital chips.
+-->
+<html lang="en" data-composition-id="orbit-couch-wall" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Orbit Couch Wall</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="orbit-couch-wall" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #121110;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            color: #F4F3EF;
+            perspective: 1400px;
+          }
+          /* 3D World Stage Container */
+          .ocw-stage {
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          /* Statement Studio Wall with Paneling */
+          .ocw-wall {
+            position: absolute;
+            width: 1400px;
+            height: 1800px;
+            background: linear-gradient(180deg, #1f1d19 0%, #171614 100%);
+            border: 1px solid rgba(255, 214, 107, 0.15);
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            transform: translateZ(-250px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 140px;
+          }
+          .ocw-wall-slats {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+              90deg,
+              transparent 0px,
+              transparent 48px,
+              rgba(0, 0, 0, 0.45) 48px,
+              rgba(0, 0, 0, 0.45) 54px
+            );
+            opacity: 0.7;
+          }
+          .ocw-wall-logo {
+            font-size: 80px;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            color: rgba(255, 214, 107, 0.85);
+            text-shadow: 0 0 30px rgba(255, 214, 107, 0.3);
+            z-index: 2;
+          }
+          .ocw-wall-sub {
+            font-size: 26px;
+            letter-spacing: 0.25em;
+            color: #9c978f;
+            text-transform: uppercase;
+            margin-top: 10px;
+            z-index: 2;
+          }
+          /* Central Studio Lounge Couch */
+          .ocw-couch-group {
+            position: absolute;
+            bottom: 400px;
+            width: 700px;
+            height: 380px;
+            transform-style: preserve-3d;
+            transform: translateZ(50px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          .ocw-couch-base {
+            width: 620px;
+            height: 180px;
+            background: linear-gradient(135deg, #2e2b26 0%, #201e1a 100%);
+            border-radius: 90px;
+            border: 2px solid rgba(255, 214, 107, 0.4);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 4px 20px rgba(255,214,107,0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 88px;
+          }
+          .ocw-couch-cushion {
+            position: absolute;
+            top: -60px;
+            width: 500px;
+            height: 120px;
+            border-radius: 60px;
+            background: #FFD66B;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #171614;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+          }
+          /* Orbiting 3D Elements */
+          .ocw-orbit-ring {
+            position: absolute;
+            width: 850px;
+            height: 850px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 214, 107, 0.3);
+            transform: rotateX(75deg);
+            transform-style: preserve-3d;
+          }
+          .ocw-orbit-card {
+            position: absolute;
+            background: rgba(33, 31, 28, 0.9);
+            border: 2px solid #FFD66B;
+            border-radius: 20px;
+            padding: 16px 28px;
+            color: #F4F3EF;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+          }
+          #ocw-card-1 { top: 0; left: 50%; transform: translate(-50%, -50%) rotateX(-75deg); }
+          #ocw-card-2 { top: 50%; right: 0; transform: translate(50%, -50%) rotateX(-75deg); }
+          #ocw-card-3 { bottom: 0; left: 50%; transform: translate(-50%, 50%) rotateX(-75deg); }
+          #ocw-card-4 { top: 50%; left: 0; transform: translate(-50%, -50%) rotateX(-75deg); }
+
+          /* Overlay title */
+          .ocw-footer {
+            position: absolute;
+            bottom: 120px;
+            left: 50px;
+            right: 50px;
+            text-align: center;
+            z-index: 100;
+          }
+          .ocw-title {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+          }
+          .ocw-subtitle {
+            font-size: 26px;
+            color: #FFD66B;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 8px;
+          }
+        </style>
+
+        <div class="ocw-stage">
+          <!-- Statement Wall -->
+          <div class="ocw-wall">
+            <div class="ocw-wall-slats"></div>
+            <div class="ocw-wall-logo">CREATOR STUDIO</div>
+            <div class="ocw-wall-sub">Spatial Showcase Lounge</div>
+          </div>
+
+          <!-- Couch -->
+          <div class="ocw-couch-group">
+            <div class="ocw-couch-base">
+              <div class="ocw-couch-cushion">VIP Lounge</div>
+              <span>🛋️</span>
+            </div>
+          </div>
+
+          <!-- Orbit Ring with cards -->
+          <div class="ocw-orbit-ring">
+            <div class="ocw-orbit-card" id="ocw-card-1">⭐ 4.9 Verified Rating</div>
+            <div class="ocw-orbit-card" id="ocw-card-2">🚀 High-Velocity Motion</div>
+            <div class="ocw-orbit-card" id="ocw-card-3">💎 Zero-Friction Workflow</div>
+            <div class="ocw-orbit-card" id="ocw-card-4">🌐 Global Creator Network</div>
+          </div>
+        </div>
+
+        <div class="ocw-footer">
+          <h1 class="ocw-title">ORBIT COUCH WALL</h1>
+          <div class="ocw-subtitle">3D Spatial Camera Revolution</div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const stage = root.querySelector(".ocw-stage");
+        const orbitRing = root.querySelector(".ocw-orbit-ring");
+        const cards = root.querySelectorAll(".ocw-orbit-card");
+        const footer = root.querySelector(".ocw-footer");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Intro: Stage sweeps in from an angle
+        tl.fromTo(stage, 
+          { rotateY: -35, rotateX: 10, scale: 0.85, opacity: 0 }, 
+          { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, duration: 1.2, ease: "power3.out" }, 
+          0
+        );
+
+        tl.fromTo(footer, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 0.4);
+
+        // Continuous 3D orbit rotation
+        tl.to(stage, {
+          rotateY: 28,
+          rotateX: -6,
+          duration: 3.0,
+          ease: "none"
+        }, 0);
+
+        // Orbit ring rotation
+        tl.to(orbitRing, {
+          rotateZ: 60,
+          duration: 3.0,
+          ease: "none"
+        }, 0);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["orbit-couch-wall"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

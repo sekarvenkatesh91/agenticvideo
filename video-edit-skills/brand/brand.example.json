@@ -1,0 +1,32 @@
+{
+  "name": "Search smarter",
+  "audience": "Busy professionals who want faster answers",
+  "platforms": ["LinkedIn", "YouTube"],
+  "voice": {
+    "tone": ["plain", "warm", "direct"],
+    "always": ["one clear takeaway per video"],
+    "never": ["hype", "slang", "fake urgency"],
+    "avoid_words": ["delve", "game-changer", "unleash", "elevate"]
+  },
+  "colors": {
+    "paper": "#F0EEE9",
+    "paper_2": "#E7E4DD",
+    "card": "#FAF9F6",
+    "ink": "#141414",
+    "ink_2": "#2A2927",
+    "muted": "#6D6963",
+    "line": "#D6D2CA",
+    "accent": "#2F45FF",
+    "accent_soft": "#DADFFF",
+    "signal": "#FF5B36",
+    "ok": "#1C8C4E"
+  },
+  "fonts": {
+    "display": "Instrument Serif",
+    "sans": "Geist",
+    "mono": "Geist Mono",
+    "google_fonts_css": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+  },
+  "logo": null,
+  "compliance": null
+}

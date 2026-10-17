@@ -1,0 +1,9 @@
+[
+ ["s1", "Hook", "What if your product demo recorded itself?"],
+ ["s2", "Prompt", "Tell the agent what to show, in plain words."],
+ ["s3", "Browser control", "It opens a real browser and drives it with Playwright. Every click and keystroke, captured frame by frame."],
+ ["s4", "Polish", "Then it zooms in where the action is, and adds captions and motion."],
+ ["s5", "Brand", "Your colours and fonts come in automatically."],
+ ["s6", "How it works", "Shot list, Playwright, HyperFrames. One command, one video."],
+ ["s7", "CTA", "It's open source. Clone it, and point it at your product."]
+]

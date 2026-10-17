@@ -1,0 +1,21 @@
+{
+  "name": "board",
+  "url": "demo-app/index.html",
+  "viewport": { "width": 980, "height": 551 },
+  "scale": 2,
+  "steps": [
+    { "mark": "navigate" },
+    { "snap": 1.0 },
+    { "move": "#new", "steps": 20, "per": 0.05 },
+    { "mark": "new" },
+    { "click": "#new", "hold": 0.6 },
+    { "mark": "type" },
+    { "type": "#title", "text": "Record product demo", "per": 0.09 },
+    { "press": "#title", "key": "Enter", "hold": 1.1 },
+    { "mark": "drag" },
+    { "drag": "#newcard", "to": "[data-col=done]", "dy": -90, "steps": 22, "hold": 0.7 },
+    { "mark": "share" },
+    { "click": "#share", "steps": 14, "hold": 1.2 },
+    { "mark": "end" }
+  ]
+}

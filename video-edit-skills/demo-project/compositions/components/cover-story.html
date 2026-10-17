@@ -1,0 +1,270 @@
+<!doctype html>
+<!--
+  cover-story: HyperFrames component (editorial / magazine layout).
+  High-end editorial fashion magazine cover: bold masthead, issue date, dynamic layered cover lines, barcode, and depth-staggered typography.
+-->
+<html lang="en" data-composition-id="cover-story" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cover Story</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="cover-story" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', serif;
+            color: #F4F3EF;
+          }
+          /* Magazine border */
+          .cs-outer-frame {
+            position: absolute;
+            inset: 40px;
+            border: 2px solid rgba(255, 214, 107, 0.35);
+            pointer-events: none;
+            z-index: 10;
+          }
+          /* Masthead */
+          .cs-header {
+            position: absolute;
+            top: 70px;
+            left: 50px;
+            right: 50px;
+            text-align: center;
+            z-index: 2;
+          }
+          .cs-top-strip {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #FFD66B;
+            border-bottom: 1px solid rgba(255, 214, 107, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            font-family: 'Archivo', sans-serif;
+          }
+          .cs-masthead {
+            font-size: 150px;
+            font-weight: 900;
+            line-height: 0.85;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #F4F3EF;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+          }
+          .cs-masthead span {
+            color: #FFD66B;
+          }
+          /* Hero image background */
+          .cs-hero-backdrop {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 45%, #2a2620 0%, #171614 85%);
+            z-index: 1;
+          }
+          .cs-portrait-silhouette {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 1200px;
+            background: linear-gradient(180deg, rgba(255,214,107,0.15) 0%, rgba(23,22,20,0.9) 100%);
+            border-radius: 400px 400px 0 0;
+            border: 1px solid rgba(255,214,107,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+          }
+          .cs-portrait-inner {
+            text-align: center;
+            padding: 40px;
+          }
+          .cs-portrait-avatar {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: #25221d;
+            border: 4px solid #FFD66B;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+          }
+          /* Editorial headlines */
+          .cs-content {
+            position: absolute;
+            bottom: 140px;
+            left: 70px;
+            right: 70px;
+            z-index: 12;
+          }
+          .cs-issue-badge {
+            display: inline-block;
+            background: #FFD66B;
+            color: #171614;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-family: 'Archivo', sans-serif;
+          }
+          .cs-main-hl {
+            font-size: 78px;
+            font-weight: 900;
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            color: #F4F3EF;
+          }
+          .cs-main-hl em {
+            font-style: italic;
+            color: #FFD66B;
+          }
+          .cs-sub-stories {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 36px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 24px;
+          }
+          .cs-story-item {
+            max-width: 500px;
+          }
+          .cs-story-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFD66B;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+          }
+          .cs-story-desc {
+            font-size: 22px;
+            color: #aba69e;
+            margin-top: 6px;
+            font-family: 'Archivo', sans-serif;
+          }
+          /* Barcode */
+          .cs-barcode {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: monospace;
+            font-size: 14px;
+            color: #9c978f;
+          }
+          .cs-bars {
+            width: 140px;
+            height: 48px;
+            background: repeating-linear-gradient(
+              90deg,
+              #F4F3EF 0px,
+              #F4F3EF 2px,
+              transparent 2px,
+              transparent 4px,
+              #F4F3EF 4px,
+              #F4F3EF 7px,
+              transparent 7px,
+              transparent 9px
+            );
+            margin-bottom: 4px;
+          }
+        </style>
+
+        <div class="cs-outer-frame"></div>
+        <div class="cs-hero-backdrop"></div>
+
+        <div class="cs-portrait-silhouette">
+          <div class="cs-portrait-inner">
+            <div class="cs-portrait-avatar">💇‍♀️</div>
+          </div>
+        </div>
+
+        <header class="cs-header">
+          <div class="cs-top-strip">
+            <span>Special Edition</span>
+            <span>Creator Culture & Style</span>
+            <span>Issue 48</span>
+          </div>
+          <h1 class="cs-masthead">STUDIO<span>·</span>PRO</h1>
+        </header>
+
+        <div class="cs-content">
+          <span class="cs-issue-badge">The Cover Story</span>
+          <h2 class="cs-main-hl">THE HOOK &amp;<br><em>RETENTION CODE</em></h2>
+          <div class="cs-sub-stories">
+            <div class="cs-story-item">
+              <div class="cs-story-title">Studio Edition · Vol. 01</div>
+              <div class="cs-story-desc">The visual storytelling framework engineered for 10x organic reach.</div>
+            </div>
+            <div class="cs-barcode">
+              <div class="cs-bars"></div>
+              <span>9 780201 379624</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const masthead = root.querySelector(".cs-masthead");
+        const silhouette = root.querySelector(".cs-portrait-silhouette");
+        const badge = root.querySelector(".cs-issue-badge");
+        const hl = root.querySelector(".cs-main-hl");
+        const stories = root.querySelector(".cs-sub-stories");
+        const frame = root.querySelector(".cs-outer-frame");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Outer border snap
+        tl.fromTo(frame, { scale: 1.05, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power2.out" }, 0);
+
+        // Masthead slam down
+        tl.fromTo(masthead, 
+          { y: -60, opacity: 0, scale: 0.95 }, 
+          { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" }, 
+          0.1
+        );
+
+        // Model silhouette rises
+        tl.fromTo(silhouette,
+          { y: 150, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.0, ease: "power3.out" },
+          0.2
+        );
+
+        // Cover story badge + headlines stagger in
+        tl.fromTo(badge, { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }, 0.4);
+        tl.fromTo(hl, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.5);
+        tl.fromTo(stories, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 0.7);
+
+        // Slow cinematic camera push
+        tl.to(silhouette, { scale: 1.04, duration: 2.0, ease: "sine.inOut" }, 1.0);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["cover-story"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

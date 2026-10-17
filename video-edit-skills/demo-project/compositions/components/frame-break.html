@@ -1,0 +1,227 @@
+<!doctype html>
+<!--
+  frame-break: HyperFrames component (depth / dynamic framing).
+  An element (model/subject/card) bursts or breaks OUT of the 9:16 frame container into the viewer's foreground with 3D perspective and cast shadows.
+-->
+<html lang="en" data-composition-id="frame-break" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Frame Break</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="frame-break" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+          }
+          .fb-backdrop-grid {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 214, 107, 0.12) 1.5px, transparent 1.5px);
+            background-size: 36px 36px;
+            opacity: 0.6;
+          }
+          .fb-container-frame {
+            position: relative;
+            width: 820px;
+            height: 1280px;
+            border-radius: 36px;
+            border: 4px solid rgba(255, 214, 107, 0.4);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 0, 0, 0.6);
+            background: #211f1c;
+            transform-style: preserve-3d;
+            overflow: visible;
+          }
+          .fb-inner-card {
+            position: absolute;
+            inset: 8px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, #2b2824 0%, #171614 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 48px;
+          }
+          .fb-tag {
+            align-self: flex-start;
+            background: #FFD66B;
+            color: #171614;
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+          }
+          .fb-card-title {
+            color: #F4F3EF;
+            font-size: 54px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+          }
+          .fb-card-subtitle {
+            color: #9c978f;
+            font-size: 30px;
+            font-weight: 500;
+            margin-top: 10px;
+          }
+          /* The breaking hero subject that breaks OUT of the frame bounds */
+          .fb-hero-break {
+            position: absolute;
+            left: 50%;
+            top: 44%;
+            transform: translate(-50%, -50%);
+            width: 860px;
+            height: 860px;
+            pointer-events: none;
+            transform-style: preserve-3d;
+            z-index: 20;
+          }
+          .fb-hero-badge {
+            position: absolute;
+            inset: 40px;
+            background: linear-gradient(135deg, rgba(255, 214, 107, 0.95), rgba(255, 245, 214, 0.9));
+            border-radius: 40px;
+            box-shadow: 0 40px 90px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #171614;
+            text-align: center;
+          }
+          .fb-hero-icon {
+            font-size: 110px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 12px 24px rgba(0,0,0,0.3));
+          }
+          .fb-hero-hl {
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+          }
+          .fb-hero-sub {
+            font-size: 30px;
+            font-weight: 700;
+            color: #454038;
+            margin-top: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
+          .fb-glass-shards {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 25;
+          }
+          .fb-shard {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(255, 214, 107, 0.4);
+            backdrop-filter: blur(4px);
+          }
+        </style>
+
+        <div class="fb-backdrop-grid"></div>
+        <div class="fb-container-frame">
+          <div class="fb-inner-card">
+            <div class="fb-tag">STUDIO PRO</div>
+            <h2 class="fb-card-title">Break The Grid</h2>
+            <p class="fb-card-subtitle">Beyond the boundaries of ordinary 2D video.</p>
+          </div>
+          
+          <div class="fb-hero-break">
+            <div class="fb-hero-badge">
+              <div class="fb-hero-icon">✨</div>
+              <h1 class="fb-hero-hl">FRAME BREAK</h1>
+              <div class="fb-hero-sub">3D Depth Pop-Out</div>
+            </div>
+          </div>
+
+          <div class="fb-glass-shards">
+            <div class="fb-shard" style="top: 15%; left: 85%; width: 60px; height: 60px; clip-path: polygon(0 0, 100% 20%, 60% 100%);"></div>
+            <div class="fb-shard" style="top: 75%; left: 5%; width: 80px; height: 80px; clip-path: polygon(20% 0, 100% 40%, 40% 100%);"></div>
+            <div class="fb-shard" style="top: 25%; left: -5%; width: 70px; height: 50px; clip-path: polygon(0 50%, 80% 0, 100% 100%);"></div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+        const frame = root.querySelector(".fb-container-frame");
+        const hero = root.querySelector(".fb-hero-break");
+        const shards = root.querySelectorAll(".fb-shard");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Frame scales into view
+        tl.fromTo(frame, 
+          { scale: 0.88, opacity: 0, rotateX: 12 }, 
+          { scale: 1, opacity: 1, rotateX: 0, duration: 0.8, ease: "power3.out" }, 
+          0
+        );
+
+        // Hero element breaks out with strong 3D translation and scale overshoot
+        tl.fromTo(hero,
+          { scale: 0.4, z: -300, rotateY: -15, opacity: 0 },
+          { scale: 1.18, z: 180, rotateY: 0, opacity: 1, duration: 1.1, ease: "back.out(2)" },
+          0.3
+        );
+
+        // Glass shards shatter outward
+        tl.fromTo(shards,
+          { scale: 0, opacity: 0 },
+          { 
+            scale: 1, 
+            opacity: 1, 
+            duration: 0.6, 
+            stagger: 0.08, 
+            ease: "power2.out" 
+          },
+          0.5
+        );
+        tl.to(shards, {
+          x: (i) => (i % 2 === 0 ? 80 : -80),
+          y: (i) => (i === 1 ? 100 : -70),
+          rotation: (i) => (i * 60 + 45),
+          duration: 1.2,
+          ease: "power1.out"
+        }, 0.6);
+
+        // Gentle floating breath
+        tl.to(hero, {
+          y: "-=20",
+          rotateX: 4,
+          duration: 1.2,
+          yoyo: true,
+          repeat: 1,
+          ease: "sine.inOut"
+        }, 1.4);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["frame-break"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

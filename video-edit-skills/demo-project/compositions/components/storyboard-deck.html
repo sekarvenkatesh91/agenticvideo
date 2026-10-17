@@ -1,0 +1,172 @@
+<!doctype html>
+<!--
+  storyboard-deck: HyperFrames component (pre-production & creative direction).
+  Presents a sequence of filmed beats as an interactive storyboard card deck with shot labels, timings, and camera cues.
+-->
+<html lang="en" data-composition-id="storyboard-deck" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Storyboard Deck</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="storyboard-deck" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            color: #F4F3EF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+          }
+          .sbd-header {
+            text-align: center;
+            margin-bottom: 40px;
+          }
+          .sbd-tag {
+            background: #FFD66B;
+            color: #171614;
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: inline-block;
+            margin-bottom: 12px;
+          }
+          .sbd-title {
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+          }
+          /* Card Rail */
+          .sbd-deck {
+            position: relative;
+            width: 900px;
+            height: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+          }
+          .sbd-card {
+            position: absolute;
+            width: 380px;
+            height: 480px;
+            border-radius: 28px;
+            background: #211f1c;
+            border: 2px solid rgba(255, 214, 107, 0.35);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.85);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform-style: preserve-3d;
+          }
+          .sbd-card-num {
+            font-family: monospace;
+            font-size: 20px;
+            color: #FFD66B;
+            font-weight: 700;
+          }
+          .sbd-card-thumb {
+            height: 200px;
+            border-radius: 16px;
+            background: #181614;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+          }
+          .sbd-card-meta {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.15;
+          }
+          .sbd-card-cue {
+            font-size: 16px;
+            font-family: 'Archivo', sans-serif;
+            color: #9c978f;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 6px;
+          }
+        </style>
+
+        <div class="sbd-header">
+          <span class="sbd-tag">Creative Direction</span>
+          <h1 class="sbd-title">STORYBOARD DECK</h1>
+        </div>
+
+        <div class="sbd-deck">
+          <div class="sbd-card" id="sbd-1">
+            <div class="sbd-card-num">SHOT 01 · 0.0s–3.0s</div>
+            <div class="sbd-card-thumb">💇‍♀️</div>
+            <div class="sbd-card-meta">
+              Frizz Hair Hook
+              <div class="sbd-card-cue">Camera: Macro push-in</div>
+            </div>
+          </div>
+
+          <div class="sbd-card" id="sbd-2">
+            <div class="sbd-card-num">SHOT 02 · 3.0s–8.5s</div>
+            <div class="sbd-card-thumb">🧴</div>
+            <div class="sbd-card-meta">
+              Science &amp; Application
+              <div class="sbd-card-cue">Camera: 45° angle pan</div>
+            </div>
+          </div>
+
+          <div class="sbd-card" id="sbd-3">
+            <div class="sbd-card-num">SHOT 03 · 8.5s–15.0s</div>
+            <div class="sbd-card-thumb">✨</div>
+            <div class="sbd-card-meta">
+              Glass Hair Result
+              <div class="sbd-card-cue">Camera: 360° Slow Orbit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const c1 = root.querySelector("#sbd-1");
+        const c2 = root.querySelector("#sbd-2");
+        const c3 = root.querySelector("#sbd-3");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Initial stacked deck arrangement
+        tl.set(c1, { x: -280, scale: 0.9, z: -100, rotateY: 15, opacity: 0.8 });
+        tl.set(c2, { x: 0, scale: 1.05, z: 80, rotateY: 0, opacity: 1 });
+        tl.set(c3, { x: 280, scale: 0.9, z: -100, rotateY: -15, opacity: 0.8 });
+
+        // Fan out and sweep to Shot 3
+        tl.fromTo(".sbd-deck", { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "power3.out" }, 0);
+        
+        // Carousel forward shift
+        tl.to(c1, { x: -480, scale: 0.8, opacity: 0.4, duration: 1.4, ease: "power2.inOut" }, 0.8);
+        tl.to(c2, { x: -260, scale: 0.9, z: -80, rotateY: 15, opacity: 0.8, duration: 1.4, ease: "power2.inOut" }, 0.8);
+        tl.to(c3, { x: 0, scale: 1.08, z: 120, rotateY: 0, opacity: 1, duration: 1.4, ease: "power2.inOut" }, 0.8);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["storyboard-deck"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

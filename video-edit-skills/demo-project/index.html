@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Creator Motion Effects Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800;12..96,900&family=Archivo:wght@500;600;700;800&family=Permanent+Marker&family=Courier+Prime:wght@700&display=swap');
+
+      :root {
+        --accent: #FFD66B; /* Butter accent */
+        --ink: #171614;
+        --paper: #F4F3EF;
+        --grey: #5A5651;
+        --card-bg: #211f1c;
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: 'Bricolage Grotesque', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        perspective: 1200px;
+      }
+
+      /* Global Header Pill */
+      .global-hud {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 500;
+        pointer-events: none;
+      }
+      .hud-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(23, 22, 20, 0.85);
+        border: 2px solid var(--accent);
+        padding: 10px 24px;
+        border-radius: 999px;
+        backdrop-filter: blur(8px);
+      }
+      .hud-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+      }
+      .hud-brand span {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--paper);
+      }
+      .hud-effect-pill {
+        background: var(--accent);
+        color: var(--ink);
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      }
+
+      /* Base Scene Shell */
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1920px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 80px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* 1. Orbit Couch Wall */
+      #scene-orbit {
+        perspective: 1400px;
+        transform-style: preserve-3d;
+      }
+      .ocw-wall {
+        position: absolute;
+        width: 900px;
+        height: 1200px;
+        background: #1e1d1a;
+        border: 2px solid rgba(255, 214, 107, 0.2);
+        border-radius: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform: translateZ(-150px);
+        box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+      }
+      .ocw-wall-h1 {
+        font-size: 72px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        color: var(--paper);
+      }
+      .ocw-couch-pod {
+        position: absolute;
+        bottom: 480px;
+        width: 580px;
+        height: 160px;
+        background: linear-gradient(135deg, #2b2823 0%, #1f1d19 100%);
+        border-radius: 80px;
+        border: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateZ(60px);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+      }
+      .ocw-couch-seat {
+        background: var(--accent);
+        color: var(--ink);
+        padding: 8px 32px;
+        border-radius: 40px;
+        font-weight: 800;
+        font-size: 24px;
+        letter-spacing: 0.1em;
+      }
+      .ocw-orbit-track {
+        position: absolute;
+        width: 820px;
+        height: 820px;
+        border-radius: 50%;
+        border: 2px dashed rgba(255, 214, 107, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-style: preserve-3d;
+        pointer-events: none;
+      }
+      .orbit-tag {
+        position: absolute;
+        background: rgba(23, 22, 20, 0.9);
+        border: 1px solid var(--accent);
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--paper);
+        white-space: nowrap;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      }
+      #ot-1 { top: 0; left: 50%; transform: translate(-50%, -50%); }
+      #ot-2 { right: 0; top: 50%; transform: translate(50%, -50%); }
+      #ot-3 { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+      #ot-4 { left: 0; top: 50%; transform: translate(-50%, -50%); }
+
+      /* 2. Frame Break */
+      #scene-break {
+        perspective: 1200px;
+      }
+      .fb-card-frame {
+        width: 840px;
+        height: 1100px;
+        border: 4px solid var(--paper);
+        border-radius: 36px;
+        background: #1f1d1a;
+        padding: 50px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+      }
+      .fb-pop-badge {
+        position: absolute;
+        top: 320px;
+        left: -40px;
+        right: -40px;
+        background: var(--accent);
+        color: var(--ink);
+        border-radius: 28px;
+        padding: 50px 40px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 4px var(--ink);
+        transform: translateZ(180px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      /* 3. UI World & Phone Mockup */
+      .phone-mockup-body {
+        width: 520px;
+        height: 1040px;
+        background: #000;
+        border-radius: 64px;
+        border: 6px solid #4a463f;
+        box-shadow: 0 50px 120px rgba(0,0,0,0.9), inset 0 0 0 4px #1a1917;
+        position: relative;
+        padding: 30px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .phone-island {
+        width: 140px;
+        height: 32px;
+        background: #1a1917;
+        border-radius: 20px;
+        align-self: center;
+        margin-bottom: 20px;
+      }
+      .phone-app-card {
+        background: #24221e;
+        border-radius: 24px;
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .phone-app-hl {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      .phone-app-p {
+        font-size: 18px;
+        color: #b0aba1;
+        margin-top: 6px;
+      }
+
+      /* 4. Checklist & Chart Grow */
+      .cc-layout {
+        width: 880px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+      }
+      .paper-checklist {
+        background: var(--paper);
+        color: var(--ink);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        transform: rotate(-1.5deg);
+      }
+      .cl-title {
+        font-family: 'Permanent Marker', cursive;
+        font-size: 38px;
+        margin-bottom: 24px;
+        border-bottom: 3px dashed var(--ink);
+        padding-bottom: 12px;
+      }
+      .cl-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .cl-box {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--ink);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        color: var(--ink);
+      }
+      .chart-card {
+        background: #211f1c;
+        border: 2px solid rgba(255, 214, 107, 0.3);
+        border-radius: 24px;
+        padding: 36px;
+      }
+      .chart-bar-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 24px;
+      }
+      .bar-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .bar-label-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .bar-bg {
+        width: 100%;
+        height: 28px;
+        background: #33302a;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 14px;
+        width: 0%;
+      }
+
+      /* 5. Paper Cut & Doodle Boil */
+      .torn-paper-layer {
+        position: absolute;
+        inset: 120px 60px;
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 12px;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.85);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px;
+      }
+      .doodle-boil-container {
+        position: relative;
+        padding: 40px;
+      }
+      .doodle-circle {
+        position: absolute;
+        inset: -20px -30px;
+        width: calc(100% + 60px);
+        height: calc(100% + 40px);
+        pointer-events: none;
+      }
+
+      /* 6. Green Screen & Vertigo */
+      .vertigo-bg-tunnel {
+        position: absolute;
+        inset: -200px;
+        background: radial-gradient(circle, #2e2b24 10%, #171614 80%);
+        background-size: 60px 60px;
+        opacity: 0.6;
+      }
+      .gs-split-view {
+        width: 860px;
+        height: 1000px;
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+      }
+      .gs-live-green {
+        position: absolute;
+        inset: 0;
+        background: #00FF00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-size: 38px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+      }
+      .gs-keyed-composite {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, #26241f 0%, #141312 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px;
+      }
+
+      /* 7. Headline Wall & Zoom Cut */
+      .hw-wall-grid {
+        position: absolute;
+        inset: -100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+        opacity: 0.9;
+        transform: rotate(-6deg);
+      }
+      .hw-wall-row {
+        font-size: 72px;
+        font-weight: 900;
+        white-space: nowrap;
+        color: #fff;
+        line-height: 1;
+      }
+      .hw-wall-row.inverted {
+        color: var(--ink);
+        background: var(--accent);
+        padding: 4px 16px;
+        border-radius: 8px;
+      }
+      .zoom-through-portal {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+      .portal-box {
+        width: 140px;
+        height: 140px;
+        border: 8px solid var(--accent);
+        border-radius: 28px;
+        background: rgba(255, 214, 107, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        font-weight: 900;
+        color: var(--accent);
+      }
+
+      /* 8. Cover Story & Glass Type */
+      .glass-type-card {
+        width: 860px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 40px;
+        padding: 70px 50px;
+        text-align: center;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 2px 20px rgba(255, 255, 255, 0.2);
+      }
+      .glass-masthead {
+        font-size: 110px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 0.95;
+      }
+      .glass-masthead span {
+        color: var(--accent);
+      }
+      .glass-badge {
+        display: inline-block;
+        background: var(--accent);
+        color: var(--ink);
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-size: 24px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 24px;
+      }
+
+      /* Bottom Safe Zone Indicator */
+      .safe-zone-guide {
+        position: absolute;
+        bottom: 70px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Archivo', sans-serif;
+        font-size: 18px;
+        color: #d0ccc4;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 14px;
+        z-index: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1080" data-height="1920">
+
+      <!-- TOP HUD -->
+      <div class="global-hud">
+        <div class="hud-brand">
+          <div class="hud-dot"></div>
+          <span>STUDIO MOTION LAB</span>
+        </div>
+        <div class="hud-effect-pill" id="current-effect-name">Effect Showcase</div>
+      </div>
+
+      <!-- 1. ORBIT COUCH WALL -->
+      <section class="scene" id="scene-orbit">
+        <div class="ocw-wall" data-layout-allow-overflow data-layout-allow-occlusion>
+          <h1 class="ocw-wall-h1">CREATOR STUDIO</h1>
+          <p style="letter-spacing: 0.2em; color: #9c978f; font-size: 26px; margin-top: 10px;">SPATIAL SHOWCASE LOUNGE</p>
+        </div>
+        <div class="ocw-couch-pod">
+          <div class="ocw-couch-seat">VIP LOUNGE</div>
+        </div>
+        <div class="ocw-orbit-track">
+          <div class="orbit-tag" id="ot-1" data-layout-allow-occlusion>⭐ 4.9 Verified Rating</div>
+          <div class="orbit-tag" id="ot-2" data-layout-allow-occlusion>🚀 High-Velocity Motion</div>
+          <div class="orbit-tag" id="ot-3" data-layout-allow-occlusion>💎 Zero-Friction Workflow</div>
+          <div class="orbit-tag" id="ot-4" data-layout-allow-occlusion>🌐 Global Creator Network</div>
+        </div>
+      </section>
+
+      <!-- 2. FRAME BREAK -->
+      <section class="scene" id="scene-break">
+        <div class="fb-card-frame">
+          <div style="font-size: 26px; color: var(--accent); font-weight: 800; text-transform: uppercase;">Creator Studio Pro</div>
+          <h2 style="font-size: 52px; font-weight: 900; line-height: 1.1; margin-top: 10px;">Beyond Standard 9:16 Limits</h2>
+          <div class="fb-pop-badge">
+            <span style="font-size: 90px; margin-bottom: 10px;">⚡</span>
+            <h1 style="font-size: 68px; font-weight: 900; line-height: 1.0;">FRAME BREAK</h1>
+            <p style="font-size: 26px; font-weight: 700; margin-top: 12px; letter-spacing: 0.1em; color: #3a352d;">3D PERSPECTIVE POP-OUT</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. UI WORLD & PHONE MOCKUP & DIGITAL ZOOM -->
+      <section class="scene" id="scene-ui-phone">
+        <div class="phone-mockup-body">
+          <div class="phone-island"></div>
+          <div class="phone-app-card">
+            <div class="phone-app-hl">Creator Studio App</div>
+            <div class="phone-app-p">Real-Time Motion Graphics Engine</div>
+          </div>
+          <div class="phone-app-card">
+            <div class="phone-app-hl">Retention Curve Optimizer</div>
+            <div class="phone-app-p">Zero Dropoff · 100% Pacing Control</div>
+          </div>
+          <div class="phone-app-card" style="background: rgba(255, 214, 107, 0.15); border-color: var(--accent);">
+            <div class="phone-app-hl" style="color: #fff;">Digital Zoom Punch-In</div>
+            <div class="phone-app-p" style="color: var(--accent);">Target Lock &amp; Focus Pull</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. CHECKLIST & CHART GROW -->
+      <section class="scene" id="scene-check-chart">
+        <div class="cc-layout">
+          <div class="paper-checklist">
+            <div class="cl-title">Video Retention Checklist</div>
+            <div class="cl-row"><div class="cl-box" id="cb-1">✔</div> Pattern Interrupt in 0:01</div>
+            <div class="cl-row"><div class="cl-box" id="cb-2">✔</div> Fast Pacing (Sub 2.5s Cuts)</div>
+            <div class="cl-row"><div class="cl-box" id="cb-3">✔</div> Keyword DM Drop Trigger</div>
+          </div>
+          <div class="chart-card">
+            <h3 style="font-size: 34px; font-weight: 800; color: var(--accent);">AUDIENCE RETENTION CURVE</h3>
+            <div class="chart-bar-wrap">
+              <div class="bar-item">
+                <div class="bar-label-line"><span>Standard Social Video</span> <span>42%</span></div>
+                <div class="bar-bg"><div class="bar-fill" id="bf-1"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label-line"><span>Engineered Retention Video</span> <span>96%</span></div>
+                <div class="bar-bg"><div class="bar-fill" id="bf-2"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. PAPER CUT & DOODLE BOIL -->
+      <section class="scene" id="scene-paper-doodle" data-layout-allow-overlap data-layout-allow-occlusion>
+        <div style="text-align: center;" data-layout-allow-overlap data-layout-allow-occlusion>
+          <h2 style="font-size: 54px; font-weight: 800; color: #9c978f;" data-layout-allow-overlap data-layout-allow-occlusion>UNDERLYING CLIP</h2>
+        </div>
+        <div class="torn-paper-layer" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="doodle-boil-container" data-layout-allow-overlap data-layout-allow-occlusion>
+            <svg class="doodle-circle" viewBox="0 0 400 200" fill="none">
+              <path id="boil-path" d="M 20 100 C 20 30, 380 30, 380 100 C 380 170, 20 170, 20 100" stroke="#171614" stroke-width="8" stroke-linecap="round"/>
+            </svg>
+            <h1 style="font-size: 78px; font-weight: 900; line-height: 1.05;" data-layout-allow-overlap data-layout-allow-occlusion>PAPER CUT &amp;<br><span style="color: #bda251;" data-layout-allow-overlap data-layout-allow-occlusion>DOODLE BOIL</span></h1>
+            <p style="font-size: 26px; font-weight: 700; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.1em;">Stop-Motion Tactile Jitter</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. GREEN SCREEN & VERTIGO -->
+      <section class="scene" id="scene-gs-vertigo" data-layout-allow-overlap data-layout-allow-occlusion>
+        <div class="vertigo-bg-tunnel" data-layout-allow-overflow></div>
+        <div class="gs-split-view" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="gs-live-green" data-layout-allow-overlap data-layout-allow-occlusion>CHROMA KEY LAYER</div>
+          <div class="gs-keyed-composite" data-layout-allow-overlap data-layout-allow-occlusion>
+            <span style="font-size: 130px; margin-bottom: 20px;">🎬</span>
+            <h2 style="font-size: 48px; font-weight: 900; color: var(--accent);" data-layout-allow-overlap data-layout-allow-occlusion>CLEAN STUDIO MATTE</h2>
+            <p style="font-size: 24px; color: #aba69e; margin-top: 8px;">Dolly Zoom (Vertigo) Warp Active</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. HEADLINE WALL & ZOOM THROUGH CUT -->
+      <section class="scene" id="scene-wall-zoom" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>
+        <div class="hw-wall-grid" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>
+          <div class="hw-wall-row" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>CREATOR STUDIO · MOTION ENGINE · RETENTION</div>
+          <div class="hw-wall-row inverted" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>VIRAL HOOKS · ZERO DROPOFF · HIGH VELOCITY</div>
+          <div class="hw-wall-row" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>PROGRAMMATIC VIDEO · 3D SPACE · SUITE</div>
+          <div class="hw-wall-row inverted" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>SCALE DISTRIBUTION · 10X REACH · CONVERT</div>
+          <div class="hw-wall-row" data-layout-allow-overlap data-layout-allow-occlusion data-layout-allow-overflow>CREATOR STUDIO · MOTION ENGINE · RETENTION</div>
+        </div>
+        <div class="zoom-through-portal" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="portal-box" data-layout-allow-overlap data-layout-allow-occlusion>M</div>
+        </div>
+      </section>
+
+      <!-- 8. COVER STORY & GLASS TYPE -->
+      <section class="scene" id="scene-cover-glass">
+        <div class="glass-type-card">
+          <div style="font-size: 22px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px;">Special Creator Edition</div>
+          <h1 class="glass-masthead">COVER<span>·</span>STORY</h1>
+          <div style="font-size: 46px; font-weight: 900; margin-top: 24px; line-height: 1.15;">FROSTED GLASS TYPE &amp;<br><em style="color: var(--accent); font-style: normal;">EDITORIAL IMPACT</em></div>
+          <div class="glass-badge">studio.pro/creator</div>
+        </div>
+      </section>
+
+      <!-- BOTTOM SAFE ZONE HUD -->
+      <div class="safe-zone-guide">
+        <span>SAFE ZONE: 9:16 UI CLEARED</span>
+        <span>HYPERFRAMES · MOTION EFFECTS SUITE</span>
+      </div>
+
+    </div>
+
+    <script>
+      (function() {
+        const tl = gsap.timeline({ paused: true });
+
+        const pill = document.querySelector("#current-effect-name");
+
+        // Helper function to set effect name on HUD
+        function setPill(name) {
+          if (pill) pill.textContent = name;
+        }
+
+        // --- SCENE 1: ORBIT COUCH WALL (0s - 2.5s) ---
+        tl.call(() => setPill("1. Orbit Couch Wall"), null, 0);
+        tl.to("#scene-orbit", { opacity: 1, visibility: "visible", duration: 0.01 }, 0);
+        tl.fromTo("#scene-orbit", { scale: 0.9, rotateY: -25 }, { scale: 1, rotateY: 18, duration: 2.5, ease: "none" }, 0);
+        tl.fromTo(".ocw-orbit-track", { rotateZ: 0 }, { rotateZ: 45, duration: 2.5, ease: "none" }, 0);
+        tl.to("#scene-orbit", { opacity: 0, duration: 0.3, ease: "power2.in" }, 2.2);
+
+        // --- SCENE 2: FRAME BREAK (2.5s - 5.0s) ---
+        tl.call(() => setPill("2. Frame Break"), null, 2.5);
+        tl.to("#scene-break", { opacity: 1, visibility: "visible", duration: 0.01 }, 2.5);
+        tl.fromTo(".fb-card-frame", { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 2.5);
+        tl.fromTo(".fb-pop-badge", 
+          { scale: 0.3, z: -200, opacity: 0 }, 
+          { scale: 1.15, z: 200, opacity: 1, duration: 0.9, ease: "back.out(2)" }, 
+          2.7
+        );
+        tl.to(".fb-pop-badge", { y: -20, rotateX: 6, duration: 1.2, yoyo: true, repeat: 1, ease: "sine.inOut" }, 3.6);
+        tl.to("#scene-break", { opacity: 0, duration: 0.3 }, 4.7);
+
+        // --- SCENE 3: UI WORLD & PHONE MOCKUP & DIGITAL ZOOM (5.0s - 7.5s) ---
+        tl.call(() => setPill("3. UI World & Phone Mockup"), null, 5.0);
+        tl.to("#scene-ui-phone", { opacity: 1, visibility: "visible", duration: 0.01 }, 5.0);
+        tl.fromTo(".phone-mockup-body", 
+          { y: 150, rotateX: 20, scale: 0.85, opacity: 0 }, 
+          { y: 0, rotateX: 0, scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, 
+          5.0
+        );
+        // Digital Zoom punch-in
+        tl.to(".phone-mockup-body", { scale: 1.35, y: -80, duration: 0.8, ease: "power4.out" }, 6.0);
+        tl.to("#scene-ui-phone", { opacity: 0, duration: 0.3 }, 7.2);
+
+        // --- SCENE 4: CHECKLIST & CHART GROW (7.5s - 10.0s) ---
+        tl.call(() => setPill("4. Checklist & Chart Grow"), null, 7.5);
+        tl.to("#scene-check-chart", { opacity: 1, visibility: "visible", duration: 0.01 }, 7.5);
+        tl.fromTo(".paper-checklist", { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 7.5);
+        tl.fromTo("#cb-1", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 7.8);
+        tl.fromTo("#cb-2", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 8.1);
+        tl.fromTo("#cb-3", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 8.4);
+        tl.fromTo(".chart-card", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 8.0);
+        tl.fromTo("#bf-1", { width: "0%" }, { width: "42%", duration: 0.9, ease: "power2.out" }, 8.5);
+        tl.fromTo("#bf-2", { width: "0%" }, { width: "96%", duration: 1.1, ease: "power3.out" }, 8.6);
+        tl.to("#scene-check-chart", { opacity: 0, duration: 0.3 }, 9.7);
+
+        // --- SCENE 5: PAPER CUT & DOODLE BOIL (10.0s - 12.5s) ---
+        tl.call(() => setPill("5. Paper Cut & Doodle Boil"), null, 10.0);
+        tl.to("#scene-paper-doodle", { opacity: 1, visibility: "visible", duration: 0.01 }, 10.0);
+        // Paper rip reveal
+        tl.fromTo(".torn-paper-layer", 
+          { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }, 
+          { clipPath: "polygon(0% 0%, 100% 0%, 85% 100%, 0% 100%)", duration: 1.2, ease: "power2.inOut" }, 
+          10.2
+        );
+        // Doodle boil simulation via SVG path morph/jitter
+        tl.to("#boil-path", { strokeWidth: 12, duration: 0.15, yoyo: true, repeat: 8 }, 10.4);
+        tl.to("#scene-paper-doodle", { opacity: 0, duration: 0.3 }, 12.2);
+
+        // --- SCENE 6: GREEN SCREEN & VERTIGO (12.5s - 15.0s) ---
+        tl.call(() => setPill("6. Green Screen & Vertigo"), null, 12.5);
+        tl.to("#scene-gs-vertigo", { opacity: 1, visibility: "visible", duration: 0.01 }, 12.5);
+        tl.fromTo(".gs-split-view", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5 }, 12.5);
+        // Wipe away green screen to reveal composite
+        tl.fromTo(".gs-keyed-composite", { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: 1.0, ease: "power2.inOut" }, 12.8);
+        // Vertigo effect: background scales up while subject holds
+        tl.fromTo(".vertigo-bg-tunnel", { scale: 1 }, { scale: 1.6, duration: 1.8, ease: "sine.inOut" }, 13.0);
+        tl.to("#scene-gs-vertigo", { opacity: 0, duration: 0.3 }, 14.7);
+
+        // --- SCENE 7: HEADLINE WALL & ZOOM THROUGH CUT (15.0s - 17.5s) ---
+        tl.call(() => setPill("7. Headline Wall & Zoom Cut"), null, 15.0);
+        tl.to("#scene-wall-zoom", { opacity: 1, visibility: "visible", duration: 0.01 }, 15.0);
+        tl.fromTo(".hw-wall-grid", { x: 50 }, { x: -80, duration: 1.5, ease: "none" }, 15.0);
+        // Portal zooms through violently
+        tl.fromTo(".portal-box", 
+          { scale: 0.2, opacity: 0 }, 
+          { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out" }, 
+          15.6
+        );
+        tl.to(".portal-box", { scale: 14, opacity: 0, duration: 0.8, ease: "power4.in" }, 16.4);
+        tl.to("#scene-wall-zoom", { opacity: 0, duration: 0.2 }, 17.2);
+
+        // --- SCENE 8: COVER STORY & GLASS TYPE (17.5s - 20.0s) ---
+        tl.call(() => setPill("8. Cover Story & Glass Type"), null, 17.5);
+        tl.to("#scene-cover-glass", { opacity: 1, visibility: "visible", duration: 0.01 }, 17.5);
+        tl.fromTo(".glass-type-card", 
+          { scale: 0.85, opacity: 0, y: 60 }, 
+          { scale: 1, opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 
+          17.5
+        );
+        tl.fromTo(".glass-badge", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 18.2);
+        tl.to(".glass-type-card", { scale: 1.03, duration: 1.5, ease: "sine.inOut" }, 18.5);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

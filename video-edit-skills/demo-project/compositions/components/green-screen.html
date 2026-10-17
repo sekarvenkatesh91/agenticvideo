@@ -1,0 +1,188 @@
+<!doctype html>
+<!--
+  green-screen: HyperFrames component (chroma key & background replacement).
+  Simulates live chroma-key / green screen extraction, background swap, and keying split inspection for video compositing.
+-->
+<html lang="en" data-composition-id="green-screen" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Green Screen Composite</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="green-screen" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            color: #F4F3EF;
+          }
+          /* Layer 1: The New High-End Background */
+          .gs-new-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 60% 40%, #2f2a22 0%, #171614 90%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .gs-bg-ambient-light {
+            position: absolute;
+            width: 900px;
+            height: 900px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 214, 107, 0.25) 0%, transparent 70%);
+            filter: blur(80px);
+          }
+          /* Virtual studio wireframe backdrop */
+          .gs-backdrop-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+              linear-gradient(rgba(255,214,107,0.06) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,214,107,0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+          }
+          /* Layer 2: The Keyed Subject */
+          .gs-subject-wrapper {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+          }
+          .gs-avatar-cutout {
+            width: 520px;
+            height: 520px;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #FFD66B 0%, #ffe9a8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+            box-shadow: 0 35px 80px rgba(0,0,0,0.7), 0 0 40px rgba(255,214,107,0.4);
+            position: relative;
+          }
+          /* Chroma Key Split Reveal Wipe */
+          .gs-chroma-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: #00FF00;
+            z-index: 2;
+            overflow: hidden;
+            border-right: 4px solid #FFD66B;
+          }
+          .gs-chroma-badge {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #00FF00;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 22px;
+            font-weight: 700;
+            border: 1px solid #00FF00;
+          }
+          .gs-composite-badge {
+            position: absolute;
+            top: 120px;
+            right: 50px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #FFD66B;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 22px;
+            font-weight: 700;
+            border: 1px solid #FFD66B;
+            z-index: 10;
+          }
+          /* Bottom UI text */
+          .gs-footer {
+            position: absolute;
+            bottom: 160px;
+            left: 60px;
+            right: 60px;
+            text-align: center;
+            z-index: 15;
+          }
+          .gs-title {
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+          }
+          .gs-sub {
+            font-size: 26px;
+            color: #FFD66B;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 10px;
+          }
+        </style>
+
+        <div class="gs-new-bg">
+          <div class="gs-bg-ambient-light"></div>
+          <div class="gs-backdrop-grid"></div>
+        </div>
+
+        <div class="gs-chroma-overlay">
+          <div class="gs-chroma-badge">RAW GREEN KEY [4:2:2]</div>
+        </div>
+
+        <div class="gs-composite-badge">CLEAN KEY COMPOSITE</div>
+
+        <div class="gs-subject-wrapper">
+          <div class="gs-avatar-cutout">
+            <span>🎬</span>
+          </div>
+        </div>
+
+        <div class="gs-footer">
+          <h2 class="gs-title">GREEN SCREEN CHROMA KEY</h2>
+          <div class="gs-sub">Seamless Studio Virtual Matte</div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const overlay = root.querySelector(".gs-chroma-overlay");
+        const cutout = root.querySelector(".gs-avatar-cutout");
+        const footer = root.querySelector(".gs-footer");
+        const rawBadge = root.querySelector(".gs-chroma-badge");
+        const compBadge = root.querySelector(".gs-composite-badge");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Intro: subject drops in
+        tl.fromTo(cutout, { scale: 0.8, opacity: 0, y: 50 }, { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.6)" }, 0);
+        tl.fromTo(footer, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 0.2);
+
+        // Wipe green screen layer across to reveal keying
+        tl.fromTo(overlay, { width: "100%" }, { width: "0%", duration: 1.5, ease: "power2.inOut" }, 0.8);
+        tl.to(rawBadge, { opacity: 0, duration: 0.3 }, 1.6);
+        tl.fromTo(compBadge, { scale: 0.9 }, { scale: 1.05, duration: 0.4, yoyo: true, repeat: 1 }, 2.0);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["green-screen"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<!--
+  gravity-drop: HyperFrames component (physics / dynamic entrance).
+  Simulates physical gravitational acceleration, ground impact squash-and-stretch, and realistic elastic rebound.
+-->
+<html lang="en" data-composition-id="gravity-drop" data-composition-duration="3.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gravity Drop</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="gravity-drop" data-duration="3.0" data-fps="30">
+        <style>
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          #root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #171614;
+            overflow: hidden;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            color: #F4F3EF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          .gd-shadow {
+            position: absolute;
+            bottom: 480px;
+            width: 480px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.75);
+            filter: blur(16px);
+            transform: scale(0.2);
+            opacity: 0.2;
+          }
+          .gd-box {
+            position: absolute;
+            bottom: 500px;
+            width: 680px;
+            height: 520px;
+            border-radius: 36px;
+            background: linear-gradient(145deg, #2b2824 0%, #1e1c19 100%);
+            border: 3px solid #FFD66B;
+            box-shadow: 0 40px 90px rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            text-align: center;
+            transform-origin: 50% 100%;
+          }
+          .gd-icon {
+            font-size: 96px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+          }
+          .gd-hl {
+            font-size: 64px;
+            font-weight: 900;
+            color: #FFD66B;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+          }
+          .gd-sub {
+            font-size: 26px;
+            color: #d0ccc4;
+            font-weight: 600;
+            margin-top: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
+        </style>
+
+        <div class="gd-shadow"></div>
+        <div class="gd-box">
+          <div class="gd-icon">💥</div>
+          <h1 class="gd-hl">GRAVITY DROP</h1>
+          <div class="gd-sub">Physics-Driven Impact &amp; Bounce</div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      (function() {
+        const root = document.querySelector("#root");
+        if (!root) return;
+
+        const box = root.querySelector(".gd-box");
+        const shadow = root.querySelector(".gd-shadow");
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Starts high offscreen, shadow faint
+        tl.set(box, { y: -1400, scaleX: 0.85, scaleY: 1.25 });
+        tl.set(shadow, { scale: 0.2, opacity: 0.1 });
+
+        // Gravity acceleration fall
+        tl.to(box, {
+          y: 0,
+          scaleX: 1.0,
+          scaleY: 1.0,
+          duration: 0.75,
+          ease: "power3.in"
+        }, 0.2);
+        tl.to(shadow, {
+          scale: 1.0,
+          opacity: 0.8,
+          duration: 0.75,
+          ease: "power3.in"
+        }, 0.2);
+
+        // Ground impact squash
+        tl.to(box, {
+          scaleX: 1.35,
+          scaleY: 0.68,
+          duration: 0.12,
+          ease: "power1.out"
+        }, 0.95);
+        tl.to(shadow, { scaleX: 1.4, duration: 0.12 }, 0.95);
+
+        // Rebound 1 (first bounce up)
+        tl.to(box, {
+          y: -220,
+          scaleX: 0.92,
+          scaleY: 1.12,
+          duration: 0.35,
+          ease: "power2.out"
+        }, 1.07);
+        tl.to(shadow, { scale: 0.6, opacity: 0.4, duration: 0.35, ease: "power2.out" }, 1.07);
+
+        // Fall 2
+        tl.to(box, {
+          y: 0,
+          scaleX: 1.0,
+          scaleY: 1.0,
+          duration: 0.3,
+          ease: "power2.in"
+        }, 1.42);
+        tl.to(shadow, { scale: 1.0, opacity: 0.8, duration: 0.3, ease: "power2.in" }, 1.42);
+
+        // Squash 2
+        tl.to(box, {
+          scaleX: 1.15,
+          scaleY: 0.85,
+          duration: 0.1,
+          ease: "power1.out"
+        }, 1.72);
+
+        // Settle into rest
+        tl.to(box, {
+          scaleX: 1.0,
+          scaleY: 1.0,
+          duration: 0.25,
+          ease: "elastic.out(1, 0.4)"
+        }, 1.82);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["gravity-drop"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

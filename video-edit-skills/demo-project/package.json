@@ -1,0 +1,22 @@
+{
+  "name": "creator-effects-suite",
+  "version": "1.0.0",
+  "description": "Motion graphics components & viral video reel framework powered by HyperFrames",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.164 preview",
+    "check": "npx --yes hyperframes@0.8.164 check",
+    "render": "npx --yes hyperframes@0.8.164 render -o final.mp4",
+    "snapshot": "npx --yes hyperframes@0.8.164 snapshot"
+  },
+  "keywords": [
+    "hyperframes",
+    "motion-graphics",
+    "reels",
+    "shorts",
+    "gsap",
+    "video-templates"
+  ],
+  "license": "MIT"
+}

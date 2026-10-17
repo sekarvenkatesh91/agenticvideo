@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boards — demo app</title>
+<!-- A tiny, fictional task board used to demo browser recording. Local only, no network calls. -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+  :root { --bg:#F7F6F3; --card:#FFFFFF; --ink:#18181B; --muted:#71717A; --line:#E4E2DD; --accent:#2F45FF; --soft:#E6E9FF; --ok:#1C8C4E; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; user-select:none; -webkit-user-select:none; background:var(--bg); color:var(--ink); font-family:'Geist',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  header { display:flex; align-items:center; gap:14px; padding:16px 24px; border-bottom:1px solid var(--line); background:#fff; }
+  .logo { font-weight:700; letter-spacing:-.03em; font-size:20px; }
+  .logo b { color:var(--accent); }
+  .crumb { color:var(--muted); font-size:14px; }
+  header .sp { flex:1; }
+  .btn { font:inherit; font-size:14px; font-weight:500; border-radius:9px; padding:8px 14px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; }
+  .btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .avatars { display:flex; }
+  .avatars i { width:28px; height:28px; border-radius:50%; border:2px solid #fff; margin-left:-8px; background:#D9D5CC; font-style:normal; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; color:#57534E; }
+  main { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; padding:22px 24px; }
+  .col { background:#EFEDE8; border-radius:14px; padding:14px; min-height:330px; transition:background .15s; }
+  .col.over { background:var(--soft); }
+  .col h2 { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; display:flex; justify-content:space-between; margin-bottom:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:11px; padding:12px 14px; margin-bottom:10px; font-size:15px; font-weight:500; box-shadow:0 1px 0 rgba(0,0,0,.03); }
+  .card .meta { display:flex; gap:8px; margin-top:8px; font-size:12px; color:var(--muted); font-weight:400; }
+  .tag { background:#F1EFEA; border-radius:6px; padding:2px 7px; }
+  .card.new { border-color:var(--accent); box-shadow:0 0 0 3px var(--soft); }
+  .card.done .t { text-decoration:line-through; color:var(--muted); }
+  .card.lift { box-shadow:0 18px 34px -12px rgba(0,0,0,.35); transform:rotate(2deg); position:fixed; z-index:20; pointer-events:none; }
+  .modal-bg { position:fixed; inset:0; background:rgba(24,24,27,.25); display:none; align-items:flex-start; justify-content:center; padding-top:110px; z-index:30; }
+  .modal-bg.show { display:flex; }
+  .modal { width:440px; background:#fff; border-radius:14px; padding:20px; box-shadow:0 24px 60px -20px rgba(0,0,0,.4); }
+  .modal h3 { font-size:15px; margin-bottom:12px; }
+  .modal input { width:100%; font:inherit; font-size:16px; border:1.5px solid var(--accent); border-radius:9px; padding:10px 12px; outline:0; }
+  .modal .hint { font-size:12px; color:var(--muted); margin-top:10px; }
+  .toast { position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px); opacity:0; background:var(--ink); color:#fff; border-radius:10px; padding:10px 16px; font-size:14px; transition:all .2s; z-index:40; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Boards<b>.</b></div><div class="crumb">/ Launch week</div><div class="sp"></div>
+  <div class="avatars"><i>AK</i><i>JL</i><i>MR</i></div>
+  <button class="btn" id="share">Share</button>
+  <button class="btn primary" id="new">New task</button>
+</header>
+<main>
+  <section class="col" data-col="todo"><h2>To do <span class="n"></span></h2>
+    <div class="card"><div class="t">Write release notes</div><div class="meta"><span class="tag">Docs</span><span>Thu</span></div></div>
+    <div class="card"><div class="t">Update pricing page</div><div class="meta"><span class="tag">Web</span><span>Fri</span></div></div>
+  </section>
+  <section class="col" data-col="doing"><h2>Doing <span class="n"></span></h2>
+    <div class="card"><div class="t">Onboarding emails</div><div class="meta"><span class="tag">Growth</span><span>Today</span></div></div>
+  </section>
+  <section class="col" data-col="done"><h2>Done <span class="n"></span></h2>
+    <div class="card done"><div class="t">Beta feedback survey</div><div class="meta"><span class="tag">Research</span><span>Mon</span></div></div>
+  </section>
+</main>
+<div class="modal-bg" id="mbg"><div class="modal"><h3>New task</h3><input id="title" placeholder="What needs doing?" autocomplete="off"><div class="hint">Press Enter to add</div></div></div>
+<div class="toast" id="toast">Link copied to clipboard</div>
+<script>
+const $ = s => document.querySelector(s);
+const counts = () => document.querySelectorAll('.col').forEach(c => c.querySelector('.n').textContent = c.querySelectorAll('.card').length);
+counts();
+$('#new').onclick = () => { $('#mbg').classList.add('show'); $('#title').value = ''; $('#title').focus(); };
+$('#title').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.value.trim()) return;
+  const c = document.createElement('div'); c.className = 'card new'; c.id = 'newcard';
+  c.innerHTML = `<div class="t"></div><div class="meta"><span class="tag">Video</span><span>Today</span></div>`;
+  c.querySelector('.t').textContent = e.target.value.trim();
+  document.querySelector('[data-col=todo]').append(c); $('#mbg').classList.remove('show'); counts();
+});
+// pointer drag between columns
+let drag = null;
+document.addEventListener('mousedown', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  e.preventDefault();
+  const r = card.getBoundingClientRect();
+  drag = { card, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width };
+  card.classList.add('lift'); card.style.width = r.width + 'px'; card.style.left = r.left + 'px'; card.style.top = r.top + 'px';
+});
+document.addEventListener('mousemove', e => {
+  if (!drag) return;
+  drag.card.style.left = (e.clientX - drag.dx) + 'px'; drag.card.style.top = (e.clientY - drag.dy) + 'px';
+  document.querySelectorAll('.col').forEach(c => { const r = c.getBoundingClientRect(); c.classList.toggle('over', e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom); });
+});
+document.addEventListener('mouseup', e => {
+  if (!drag) return;
+  const col = [...document.querySelectorAll('.col')].find(c => { const r = c.getBoundingClientRect(); return e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom; });
+  const card = drag.card; card.classList.remove('lift'); card.style.cssText = '';
+  if (col) { col.querySelector('h2').after(card); if (col.dataset.col === 'done') { card.classList.add('done'); card.classList.remove('new'); } }
+  document.querySelectorAll('.col').forEach(c => c.classList.remove('over')); drag = null; counts();
+});
+$('#share').onclick = () => { $('#toast').classList.add('show'); };
+</script>
+</body>
+</html>

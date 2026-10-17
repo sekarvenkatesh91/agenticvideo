@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+/* Palette: Cloud Dancer (Pantone 11-4201, Color of the Year 2026) base, ink, one cobalt accent, one signal. */
+:root {
+  --paper:#F0EEE9; --paper-2:#E7E4DD; --card:#FAF9F6; --ink:#141414; --ink-2:#2A2927;
+  --muted:#6D6963; --line:#D6D2CA; --accent:#2F45FF; --accent-soft:#DADFFF; --signal:#FF5B36; --ok:#1C8C4E;
+  --serif:'Instrument Serif',Georgia,serif; --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { width:1920px; height:1080px; overflow:hidden; background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+#root { position:relative; width:1920px; height:1080px; overflow:hidden; background:var(--paper); }
+.fx { position:absolute; inset:0; visibility:hidden; opacity:0; overflow:hidden; }
+.dark { background:var(--ink); color:var(--paper); }
+.paper { background:var(--paper); }
+.center { display:flex; align-items:center; justify-content:center; }
+.stage { position:absolute; left:0; right:0; top:0; height:930px; }
+.serif { font-family:var(--serif); font-weight:400; }
+.mono { font-family:var(--mono); }
+.it { font-style:italic; }
+.acc { color:var(--accent); }
+
+/* chrome */
+.meta { position:absolute; top:40px; left:56px; right:56px; z-index:900; display:flex; justify-content:space-between; align-items:baseline; font-family:var(--mono); font-size:17px; letter-spacing:.02em; color:var(--muted); pointer-events:none; }
+.brand { color:var(--ink); font-weight:600; }
+.brand b { color:var(--accent); font-weight:600; }
+.skill { position:absolute; top:40px; right:56px; z-index:901; font-family:var(--mono); font-size:17px; color:var(--muted); visibility:hidden; opacity:0; text-align:right; }
+.skill b { color:var(--ink); font-weight:600; }
+.fxlabel { position:absolute; left:56px; bottom:48px; z-index:901; font-family:var(--mono); font-size:17px; color:var(--muted); visibility:hidden; opacity:0; }
+.fxlabel b { color:var(--ink); font-weight:600; margin-right:12px; }
+.on-dark .fxlabel b, .on-dark .skill b { color:var(--paper); }
+.cap { position:absolute; left:420px; right:420px; bottom:40px; z-index:902; text-align:center; visibility:hidden; opacity:0; }
+.cap span { display:inline-block; font-size:30px; line-height:1.3; font-weight:500; color:var(--ink); background:rgba(250,249,246,.94); border:1px solid var(--line); border-radius:14px; padding:10px 20px; }
+.progress { position:absolute; left:0; right:0; bottom:0; height:4px; z-index:903; background:var(--line); }
+.progress i { display:block; height:100%; background:var(--accent); transform-origin:left center; }
+.grain { position:absolute; inset:-60px; z-index:899; pointer-events:none; opacity:.05; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* shared UI atoms */
+.sbox { height:92px; border-radius:46px; background:var(--card); border:1.5px solid var(--line); display:flex; align-items:center; gap:22px; padding:0 36px; font-family:var(--mono); font-size:34px; color:var(--ink); box-shadow:0 1px 0 rgba(0,0,0,.03), 0 18px 40px -24px rgba(20,20,20,.25); }
+.sbox .mag { width:30px; height:30px; flex:none; border:3px solid var(--muted); border-radius:50%; position:relative; }
+.sbox .mag::after { content:''; position:absolute; width:12px; height:3px; background:var(--muted); right:-11px; bottom:-5px; transform:rotate(45deg); }
+.caret { display:inline-block; width:3px; height:40px; background:var(--accent); vertical-align:middle; margin-left:4px; }
+.res { padding:22px 0; border-bottom:1px solid var(--line); }
+.res .d { font-family:var(--mono); font-size:20px; color:var(--muted); }
+.res .t { font-size:32px; font-weight:600; color:var(--ink); margin-top:6px; letter-spacing:-.01em; }
+.res .t mark { background:var(--accent-soft); color:var(--ink); padding:0 4px; border-radius:4px; }
+.win { position:absolute; background:var(--card); border:1.5px solid var(--line); border-radius:22px; overflow:hidden; box-shadow:0 40px 80px -40px rgba(20,20,20,.35); }
+.winbar { height:58px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; padding:0 22px; }
+.winbar i { width:12px; height:12px; border-radius:50%; background:var(--line); }
+.winbar .url { margin-left:18px; flex:1; height:36px; border-radius:18px; background:var(--paper); font-family:var(--mono); font-size:19px; display:flex; align-items:center; padding:0 18px; color:var(--ink-2); }
+.kicker { font-family:var(--mono); font-size:20px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
